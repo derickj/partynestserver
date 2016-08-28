@@ -1,0 +1,63 @@
+
+
+<div class="full-width">
+    <div class="container" ng-controller="IndexController">
+ 
+  <!--      <div class="row row-content">
+            <div class="col-xs-12 col-sm-3 col-sm-push-9">
+                <p style="padding:20px;"></p>
+                <h3 align=center>Trending Product</h3>
+            </div>
+            <div class="col-xs-12 col-sm-9 col-sm-pull-3">
+                <div ng-if="!showDish">
+                    <h3>{{message}}</h3>
+                </div>
+                <div class="media" ng-if="showDish">
+                     <div class="media-left media-middle">
+                        <a ui-sref="app.dishdetails({id: featuredish.id})">
+                        <img class="media-object img-thumbnail"
+                             ng-src={{featuredish.image}} alt="{{featuredish.name}}">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h2 class="media-heading">{{featuredish.name}}
+                         <span class="label label-danger">{{featuredish.label}}</span>
+                         <span class="badge">{{featuredish.price | currency:"R"}}</span></h2>
+                        <p>{{featuredish.description}}</p>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+<div class="row row-content" ng-if="!showMsg">
+      
+          <h2>Parties are fun!!!!</h2>
+          <p>Lollipop jelly beans chocolate bar cupcake jujubes candy canes jelly fruitcake biscuit. Apple pie chupa chups biscuit jelly beans donut dragée. Tart gummies sesame snaps.</p>
+          <p>Cheesecake topping brownie chocolate cake gummies icing muffin. Muffin liquorice caramels. Icing carrot cake soufflé.</p>
+          <p>Muffin pie halvah macaroon marzipan marzipan cake cotton candy pie. Fruitcake liquorice danish chocolate toffee liquorice gummies. Wafer ice cream cookie. Icing dessert candy canes sweet jelly-o fruitcake cupcake.</p>
+</div>
+<div class="row row-content" ng-model="message" ng-if="showMsg">
+      <p>{{message.msg}}</p>
+</div>
+
+<!--        <div class="row row-content">
+            <div class="col-xs-12 col-sm-3">
+                <p style="padding:20px;"></p>
+                <h3 align=center>What's New</h3>
+            </div> 
+            <div class="col-xs-12 col-sm-3">
+                <img class="img-responsive"
+                         src="images/Pikkewyn_boksie_small.jpg" alt="Pikkewyn Boksie">
+            </div>
+            <div class="col-xs-12 col-sm-3">
+                                <img class="img-responsive"
+                         src="images/minion_boksie_small.png" alt="Minion Boksie">
+            </div>
+            <div class="col-xs-12 col-sm-3">
+                                <img class="img-responsive"
+                         src="images/strand_uitnooi_xs.png" alt="Beach Party">
+            </div>
+
+        </div> -->
+
+    </div>
+</div>

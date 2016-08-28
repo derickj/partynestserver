@@ -1,0 +1,64 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../node_modules/loopback-ds-timestamp-mixin",
+      "../common/mixins",
+      "./mixins"
+    ]
+  },
+  "User": {
+    "dataSource": "db"
+  },
+  "AccessToken": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ACL": {
+    "dataSource": "partynestdb",
+    "public": false
+  },
+  "RoleMapping": {
+    "dataSource": "partynestdb",
+    "public": false
+  },
+  "Role": {
+    "dataSource": "partynestdb",
+    "public": false
+  },
+  "Customer": {
+    "dataSource": "partynestdb",
+    "public": true
+  },
+  "Theme": {
+    "dataSource": "partynestdb",
+    "public": true
+  },
+  "Review": {
+    "dataSource": "partynestdb",
+    "public": true
+  },
+  "Product": {
+    "dataSource": "partynestdb",
+    "public": true
+  },
+  "Request": {
+    "dataSource": "partynestdb",
+    "public": true
+  },
+  "OrderItem": {
+    "dataSource": "partynestdb",
+    "public": true
+  },
+  "Marketing": {
+    "dataSource": "partynestdb",
+    "public": true
+  }
+}

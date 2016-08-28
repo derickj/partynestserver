@@ -1,0 +1,25 @@
+{
+  "name": "partynestserver",
+  "description": "partynest",
+  "main": "index.html",
+  "authors": [
+    "Derick J <derick63@gmail.com>"
+  ],
+  "license": "UNLICENSED",
+  "homepage": "index.html",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.8",
+    "angular-resource": "^1.5.8",
+    "angular-ui-router": "^0.3.1",
+    "bootstrap": "^3.3.7",
+    "font-awesome": "^4.6.3",
+    "ng-dialog": "^0.6.4"
+  }
+}
