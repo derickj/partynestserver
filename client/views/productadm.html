@@ -1,0 +1,84 @@
+<div class="full-width">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+               <ul class="breadcrumb">
+                   <li><a href="index.html">Home</a></li>
+                   <li>Admin</li>
+                   <li class="active">Products</li>
+               </ul>
+            </div>
+        </div>
+        <div class="row">
+           <div class="col-xs-12">
+              <h3>Maintain Products</h3> 
+           </div>
+        </div>
+        <div class="row row-content">
+            <div class="col-xs-12 col-sm-10"> 
+                <form class="form-horizontal" role="form" 
+                      name="productForm" ng-submit="addProduct()" novalidate>
+                    <div class="form-group" ng-class="{ 'has-error' : productForm.productname.$invalid && productForm.productname.$dirty }">
+                        <label for="productname" class="col-sm-2 control-label">Product Name</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control" id="productname" name="productname" 
+                               placeholder="New product name" ng-model="newProduct.name" required>
+                        <span class="has-error control-label" ng-show="productForm.productname.$invalid && productForm.productname.$dirty" 
+                              class="help-block">The product name cannot be empty</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="productDesc" class="col-sm-2 control-label">Description</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" id="productDesc" name="productDesc" rows="3" 
+                                      placeholder="Descriptive text" ng-model="newProduct.description"></textarea>
+                        </div>
+                    </div> 
+                    <div class="form-group">
+                        <label for="productPrice" class="col-sm-2 control-label">Unit Price</label>
+                        <div class="col-xs-6 col-sm-3">
+                                    <input type="number" class="form-control input-sm" id="productPrice" name="productPrice" 
+                                           min=0 max=200 ng-model="newProduct.unitprice">
+                        </div>
+                    </div> 
+                    <div class="form-group">
+                        <label for="productLabel" class="col-sm-2 control-label">Label</label>
+                        <div class="col-xs-6 col-sm-3">
+                                    <input type="text" class="form-control input-sm" id="productLabel" name="productLabel" 
+                                           ng-model="newProduct.label">
+                        </div>
+                    </div> 
+                    <div class="form-group">
+                        <label for="productImage" class="col-sm-2 control-label">Image file</label>
+                        <div class="col-xs-6 col-sm-4">
+                            <input type='file' id="productImage" name="productImage">
+                        </div>
+                        <div class="col-xs-6 col-sm-4">
+                            <img id="blah" src="images/colorlogo.png" alt="your image" height="100">
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-10" ng-if="!canloadfiles">
+                        The browser does not fully support loading of files.
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary" ng-disabled="productForm.$invalid">Submit</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+        <!-- debug <div class="row">
+            <tt>New : {{newProduct.name}} {{newProduct.description}} {{newProduct.unitprice}} {{newProduct.label}}</tt>
+            <img src="{{newProduct.image}}" alt="Product Image" height="100">
+        </div> -->
+        <div class="row">
+                <div class="list-group">
+                    <a class="list-group-item" ng-repeat="product in products">{{product.name}} {{product.id}}&nbsp;
+                    <i class="glyphicon glyphicon-remove pull-right"
+                        ng-click="removeProduct(product)"></i></a>
+                </div>
+        </div>
+    </div>
+</div>

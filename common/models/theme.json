@@ -41,6 +41,13 @@
       "principalId": "admin",
       "permission": "ALLOW",
       "property": "delete"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW",
+      "property": "deleteById"
     }
   ],
   "methods": {}

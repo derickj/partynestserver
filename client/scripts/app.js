@@ -38,23 +38,66 @@ partyNestApp.config(['$stateProvider', '$urlRouterProvider','$httpProvider', fun
         }
     })
     
-        // route for the aboutus page
+    // route for the products page
+    .state('app.products', {
+        url:'products',
+        views: {
+            'content@': {
+                templateUrl : 'views/products.html',
+                controller  : 'ProductController'                  
+            }
+        }
+    })
+    
+    // routes for the admin pages
+    .state('app.themeadm', {
+        url:'themeadm',
+        views: {
+            'content@': {
+                templateUrl : 'views/themeadm.html',
+                controller  : 'ThemeController'                  
+            }
+        }
+    })
     .state('app.admin', {
         url:'admin',
         views: {
             'content@': {
-                templateUrl : 'views/admin.html' //,
-                // controller  : 'AboutController'                  
+                templateUrl : 'views/themeadm.html',
+                controller  : 'ThemeController'                  
+            }
+        }
+    })    
+    .state('app.productadm', {
+        url:'productadm',
+        views: {
+            'content@': {
+                templateUrl : 'views/productadm.html',
+                controller  : 'ProductAdmController'                  
             }
         }
     })
+              
+    // route for the product detail page
+    .state('app.productdetail', {
+        url: 'detail/:id',
+        views: {
+            'content@': {
+                templateUrl : 'views/productdetail.html',
+                controller  : 'ProductDetailController'
+            }
+        }
+    })
+    
     ;
 /*      .state('app', {
         url: '',
         templateUrl: 'views/home.html',
         controller: 'IndexController'
       }); */
+    
     $urlRouterProvider.otherwise('/');
+    
     /* $httpProvider.interceptors.push(function($q, $location, LoopBackAuth) {
         return {
             responseError: function(rejection) {

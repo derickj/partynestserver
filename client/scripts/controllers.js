@@ -150,6 +150,196 @@ angular
     }; */
     
 }])
+
+.controller('ProductController', ['$scope', '$state', 'Product', 'Theme', function($scope,
+      $state, Product, Theme) {
+    $scope.tab = 1;
+    $scope.filtText = "";
+    $scope.showDetails = false;
+    $scope.showProducts = false;
+    $scope.emptyWislist = false;
+    $scope.message = "Loading ...";
+    $scope.products = [];
+    $scope.themes = [];
+    
+    $scope.updateFilter = function(txt) {
+        $scope.filtText = txt;
+        console.log ("New filttext",$scope.filtText);
+    };
+    
+    function getThemes() {
+      Theme
+        .find()
+        .$promise
+        .then(function(results) {
+          $scope.themes = results;
+        });
+    }
+    getThemes();
+    
+    function getProducts() {
+      Product
+        .find()
+        .$promise
+        .then(function(results) {
+          $scope.products = results;
+          $scope.showProducts = true;
+          console.log ("Products are:",results);
+        })
+        .catch(function(response) {
+          $scope.message = "Error: "+response.status + " " + response.statusText;
+          console.error('getProducts error', response.status, response.data);
+        });
+    }
+    getProducts();
+   
+    $scope.toggleDetails = function() {
+        $scope.showDetails = !$scope.showDetails;
+    };
+      
+  }])
+
+.controller('ThemeController', ['$scope', '$state', 'Theme', function($scope,
+      $state, Theme) {
+    $scope.themes = [];
+    $scope.newTheme = '';
+    
+    function getThemes() {
+      Theme
+        .find()
+        .$promise
+        .then(function(results) {
+          $scope.themes = results;
+        });
+    }
+    getThemes();
+
+    $scope.addTheme = function() {
+      Theme
+        .create($scope.newTheme)
+        .$promise
+        .then(function(theme) {
+          $scope.newTheme = '';
+          $scope.themeForm.themename.$setPristine();
+          $('.focus').focus();
+          getThemes();
+        });
+    };
+
+    $scope.removeTheme = function(item) {
+      Theme
+        .deleteById({id: item.id})
+        .$promise
+        .then(function() {
+          getThemes();
+        });
+    };
+  }])
+
+.controller('ProductAdmController', ['$scope', '$state', 'Product', function($scope,
+      $state, Product) {
+    $scope.products = [];
+    $scope.newProduct = {name :"", description: "", unitprice: 0, image : ""};
+    $scope.canloadfiles = true;
+    
+    if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+        console.log("The File APIs are not fully supported in the browser.");
+        $scope.canloadfiles = false;
+    }
+
+    function getProducts() {
+    Product
+        .find()
+        .$promise
+        .then(function(results) {
+          $scope.products = results;
+          $scope.showProducts = true;
+          console.log ("Products are:",results);
+        })
+        .catch(function(response) {
+          $scope.message = "Error: "+response.status + " " + response.statusText;
+          console.error('getProducts error', response.status, response.data);
+        });
+    }
+    getProducts();
+
+    $scope.addProduct = function() {
+      Product
+        .create($scope.newProduct)
+        .$promise
+        .then(function(prod) {
+          $scope.newProduct = {name :"", description: "", unitprice: 0, image : ""};
+          $scope.productForm.productname.$setPristine();
+          $('.focus').focus();
+          getProducts();
+        });
+    };
+
+    $scope.removeProduct = function(item) {
+      Theme
+        .deleteById({id: item.id})
+        .$promise
+        .then(function() {
+          getProducts();
+        });
+    };
+    
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function (e) {
+                 console.log ("Change image to",e.target);
+                $scope.newProduct.image = e.target.result;
+                $('#blah').attr('src', e.target.result);
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+    
+    $("#productImage").change(function(){
+        readURL(this);
+        console.log ("New product", $scope.newProduct);
+    });
+    
+/*    $imageData = base64_encode(file_get_contents($image));
+$scope.registration.imgSrc = "data:image/jpeg;base64," + imageData;
+// Format the image SRC:  data:{mime};base64,{data};
+$src = 'data: '.mime_content_type($image).';base64,'.$imageData;
+
+// Echo out a sample image
+echo '<img src="'.$src.'">'; */
+    
+  }])
+
+.controller('ProductDetailController', ['$scope', '$stateParams', 'Product', function($scope, $stateParams, Product) {
+
+    $scope.product = {};
+    $scope.showProduct = false;
+    $scope.message="Loading ...";
+    
+    function getProduct() {
+    Product
+        .findById({id:$stateParams.id})
+        .$promise
+        .then(function(results) {
+          $scope.product = results;
+            if ($scope.product.label == " ") {
+                $scope.product.label = "";
+            }
+          $scope.showProduct = true;
+          console.log ("Product is:",$scope.product);
+        })
+        .catch(function(response) {
+          $scope.message = "Error: "+response.status + " " + response.statusText;
+          console.error('getProduct error', response.status, response.data);
+        });
+    }
+    getProduct();
+    
+}])
+
 ;
 
 

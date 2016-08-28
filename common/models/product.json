@@ -28,10 +28,6 @@
       "type": "string",
       "required": true,
       "default": "undefined.jpg"
-    },
-     "theme": {
-     "type": "string",
-     "default": "all"
     }
   },
   "validations": [],

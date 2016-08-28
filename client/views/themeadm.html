@@ -1,0 +1,46 @@
+<div class="full-width">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+               <ul class="breadcrumb">
+                   <li><a href="index.html">Home</a></li>
+                   <li>Admin</li>
+                   <li class="active">Themes</li>
+               </ul>
+            </div>
+        </div>
+        <div class="row">
+           <div class="col-xs-12">
+              <h3>Maintain Themes</h3> 
+           </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-9"> 
+                <form class="form-horizontal" role="form" 
+                      name="themeForm" ng-submit="addTheme()" novalidate>
+                    <div class="form-group" ng-class="{ 'has-error' : themeForm.themename.$invalid && themeForm.themename.$dirty }">
+                        <label for="themename" class="col-sm-2 control-label">Theme Name</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control" id="themename" name="themename" 
+                               placeholder="New theme name" ng-model="newTheme.name" required>
+                        <span class="has-error control-label" ng-show="themeForm.themename.$invalid && themeForm.themename.$dirty" 
+                              class="help-block">The theme name cannot be empty</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary" ng-disabled="themeForm.$invalid">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row row-content">
+                <div class="list-group">
+                    <a class="list-group-item" ng-repeat="theme in themes">{{theme.name}} {{theme.id}}&nbsp;
+                    <i class="glyphicon glyphicon-remove pull-right"
+                        ng-click="removeTheme(theme)"></i></a>
+                </div>
+        </div>
+    </div>
+</div>

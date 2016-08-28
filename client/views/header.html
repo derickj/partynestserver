@@ -17,17 +17,16 @@
                     <li><a ui-sref="app.aboutus">
                         <span class="glyphicon glyphicon-info-sign"
                          aria-hidden="true"></span> About</a></li>
-                    <!-- <li><a ui-sref="app.products">
+                    <li><a ui-sref="app.products">
                          <span class="glyphicon glyphicon-list-alt"
-                         aria-hidden="true"></span> 
-                         Products</a></li> -->
+                         aria-hidden="true"></span> Products</a></li>
                     <li ng-if="isAdminUser" class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <span class="glyphicon glyphicon-wrench"
                          aria-hidden="true"></span>Admin<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a ui-sref="app.admin">Themes</a></li>
-                            <li><a ui-sref="app.admin">Products</a></li>
+                            <li><a ui-sref="app.themeadm">Themes</a></li>
+                            <li><a ui-sref="app.productadm">Products</a></li>
                             <li><a ui-sref="app.admin">Content</a></li>
                         </ul>
                     </li>
