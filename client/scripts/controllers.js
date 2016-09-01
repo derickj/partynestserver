@@ -23,9 +23,10 @@ angular
 .controller('HeaderController', ['$scope', '$state', '$rootScope', 'ngDialog', 'Customer', 'Role', function ($scope, $state, $rootScope, ngDialog, Customer, Role) {
 
     $scope.loggedIn = false;
-    $scope.username = 'not logged in';
+    $scope.username = '...';
     $scope.isAdminUser = false;
     $scope.admins = {principalid : 0};
+    $scope.userId = 0;
 
     Role.findOne(function (response) {
         console.log ("role found", response);
@@ -58,18 +59,25 @@ angular
 //        }
         return (found);
     };
-    
-    if(Customer.isAuthenticated()) {
-        console.log ("Customer is authenticated in HeaderCtrl: ",Customer.getCurrentId());
+    if (Customer.isAuthenticated()) {
+        console.log ("HeaderCtrl Customer is already authenticated: ");
+        $scope.userId = Customer.getCurrentId();
+        $scope.user = Customer.getCurrent(function(value,response){
+            console.log ("HeaderCtrl getCurrent",value);
+            $scope.username = value.username;
+        },
+        function(err) {
+            console.log ("HeaderCtrl getCurrent err",err);
+        });
+        $rootScope.$broadcast('login:Successful');
+        $scope.isAdminUser = testAdminRole($scope.userId);
         $scope.loggedIn = true;
-        $scope.username = Customer.getCurrentId();
-        $scope.isAdminUser = testAdminRole($scope.username);
-    } 
-    else
+    }
+    else 
     {
         console.log ("Customer is not authenticated in HeaderCtrl: ");
         $scope.loggedIn = false;
-        $scope.username = 'not logged in';
+        $scope.username = '...';
     }
         
     $scope.openLogin = function () {
@@ -77,16 +85,19 @@ angular
     };
     
     $scope.logOut = function() {
-       Customer.logout();
+        Customer.logout();
+        $rootScope.$broadcast('logout');
         $scope.loggedIn = false;
-        $scope.username = 'not logged in';
+        $scope.username = '...';
         $scope.isAdminUser = false;
     };
     
     $rootScope.$on('login:Successful', function () {
         $scope.loggedIn = true;
-        $scope.username = Customer.getCurrentId();
-        $scope.isAdminUser = testAdminRole($scope.username);
+        $scope.user = Customer.getCachedCurrent();
+        $scope.username = $scope.user.username;
+        console.log ("HeaderCtrl received login broadcast",$scope.user);
+        $scope.isAdminUser = testAdminRole($scope.user.id);
     });
         
 /*    $rootScope.$on('registration:Successful', function () {
@@ -100,7 +111,8 @@ angular
     
 }])
 
-    .controller('LoginController', ['$scope', '$rootScope', 'ngDialog', 'Customer', function ($scope, $rootScope, ngDialog, Customer) {
+    .controller('LoginController', ['$scope', '$rootScope', '$location', 'ngDialog', 'Customer', 
+                function ($scope, $rootScope, $location, ngDialog, Customer) {
     
     /*$scope.loginData = $localStorage.getObject('userinfo','{}'); */
     $scope.loginData = {
@@ -109,39 +121,46 @@ angular
       password : "",
       token : ""
     };
+    $scope.user = {};
     $scope.rememberMe = 0;
     if (Customer.isAuthenticated()) {
-        console.log ("LognCtrl Customer is already authenticated: ",Customer.getCurrentId());
+        $scope.user = Customer.getCachedCurrent();
+        console.log ("LognCtrl Customer is already authenticated: ", $scope.user);
         $rootScope.$broadcast('login:Successful');
     }
     else 
     {    
         console.log ("LoginCtrl Not authenticated");
-        /* var message = '\
-            <div class="ngdialog-message">\
-            <div><h3>Login Unsuccessful</h3></div>' +
-            '<div class="ngdialog-buttons">\
-                <button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm("OK")>OK</button>\
-                </div>'
-                    ngDialog.openConfirm({ template: message, plain: 'true'}); */
+        
     }               
 
     $scope.doLogin = function() {
-        Customer.login({ rememberMe: $scope.rememberMe }, $scope.loginData, function(err) {
+        $scope.user = Customer.login({ rememberMe: $scope.rememberMe, include: 'user' }, $scope.loginData, function(value,response) {
+            console.log ("Login is not NULL", value, response);
+            $scope.user = value.user;
+            $rootScope.$broadcast('login:Successful');
+            var next = $location.nextAfterLogin || '/';
+            $location.nextAfterLogin = null;
+            $location.path(next); 
+            ngDialog.close();
+        },
+        function(err){  
             if (err)
             {
-                console.log ("Result from login is not NULL", err);
-                $rootScope.$broadcast('login:Successful');
+                console.log ("Error logging in", err);
             }
             else
             {
                 console.log ("Err from login is NULL");                
             }
-            /* var next = $location.nextAfterLogin || '/';
-            $location.nextAfterLogin = null;
-            $location.path(next); */
-
-         ngDialog.close();
+            var message = '\
+            <div class="ngdialog-message">\
+            <div><h4>Login unsuccessful</h4></div><div><p>' +
+            err.statusText + '</p></div>' +
+            '<div class="ngdialog-buttons">\
+                <button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm("OK")>OK</button>\
+                </div>'
+                    ngDialog.openConfirm({ template: message, plain: 'true'});
         });
     };
         
@@ -316,7 +335,9 @@ echo '<img src="'.$src.'">'; */
 .controller('ProductDetailController', ['$scope', '$stateParams', 'Product', function($scope, $stateParams, Product) {
 
     $scope.product = {};
+    $scope.reviews = [];
     $scope.showProduct = false;
+    $scope.showReviews = false;
     $scope.message="Loading ...";
     
     function getProduct() {
@@ -338,6 +359,161 @@ echo '<img src="'.$src.'">'; */
     }
     getProduct();
     
+    function getReviews() {
+    Product
+        .reviews({id:$stateParams.id})
+        .$promise
+        .then(function(results) {
+            $scope.reviews = results;
+            $scope.showReviews = true;
+            console.log ("Reviews are:",$scope.reviews);
+        })
+        .catch(function(response) {
+          $scope.message = "Error: "+response.status + " " + response.statusText;
+          console.error('getReviews error', response.status, response.data);
+        });
+    }
+    getReviews();
+    
+}])
+
+.controller('ContactAdmController', ['$scope', '$state', 'Contact', function($scope,
+      $state, Contact) {
+    $scope.contacts = [];
+    $scope.newContact = '';
+    
+    function getContacts() {
+      Contact
+        .find()
+        .$promise
+        .then(function(results) {
+          $scope.contacts = results;
+        });
+    }
+    getContacts();
+
+/*    $scope.addTheme = function() {
+      Theme
+        .create($scope.newTheme)
+        .$promise
+        .then(function(theme) {
+          $scope.newTheme = '';
+          $scope.themeForm.themename.$setPristine();
+          $('.focus').focus();
+          getThemes();
+        });
+    }; */
+
+    $scope.removeContact = function(item) {
+      Contact
+        .deleteById({id: item.id})
+        .$promise
+        .then(function() {
+          getContacts();
+        });
+    };
+  }])
+
+.controller('ReviewController', ['$scope','$rootScope', '$stateParams', 'Product', 'Customer', function($scope, $rootScope, $stateParams, Product, Customer) {
+            
+    $scope.newcomment = {rating:5, review:"", productId:"", customerId:""};
+    $scope.newcomment.productId = $stateParams.id;    
+
+    $scope.loggedIn = false;
+    
+    if (Customer.isAuthenticated()) {
+        $scope.newcomment.customerId = Customer.getCurrentId();
+        console.log ("LognCtrl Customer is already authenticated: ",$scope.newcomment.customerId);
+        $scope.loggedIn = true;
+    }
+    
+    $scope.submitComment = function (form) {
+        console.log($scope.newcomment);
+        Product
+        .reviews.create({id:$stateParams.id},$scope.newcomment)
+        .$promise
+        .then(function(results) {
+            $scope.reviews = results;
+            $scope.showReviews = true;
+            console.log ("Reviews are:",$scope.reviews);
+        })
+        .catch(function(response) {
+          $scope.message = "Error: "+response.status + " " + response.statusText;
+          console.error('createReview error', response.status, response.data);
+        });
+        
+        //$scope.dish.comments.push($scope.newcomment);
+        //menuFactory.getDishes().update({id:$scope.dish.id},$scope.dish);
+        form.$setPristine();
+        $scope.newcomment = {rating:5, review:"", productId:"", customerId:""};
+        $scope.newcomment.productId = $stateParams.id;
+        $scope.newcomment.customerId = Customer.getCurrentId();
+    };
+    
+    $rootScope.$on('login:Successful', function () {
+        $scope.loggedIn = true;
+        console.log ("ReviewController Customer is now authenticated: ",$scope.newcomment.customerId);
+        $scope.newcomment.customerId =  Customer.getCurrentId();
+    });
+    
+    $rootScope.$on('logout', function () {
+        $scope.loggedIn = false;
+        console.log ("ReviewController Customer is no longer authenticated: ");
+        $scope.newcomment.customerId =  "";
+    });
+}])
+
+.controller('ContactController', ['$scope', 'Contact', function ($scope, Contact) {
+
+    $scope.feedback = {
+        mychannel: "",
+        firstName: "",
+        lastName: "",
+        agree: false,
+        email: "",
+        telno : "",
+        feedback : ""
+    };
+
+    var channels = [{
+        value: "tel",
+        label: "Tel."
+    }, {
+        value: "Email",
+        label: "Email"
+    }];
+
+    $scope.channels = channels;
+    $scope.invalidChannelSelection = false;
+
+    $scope.sendFeedback = function () {
+        console.log('Trying to create ', $scope.feedback);
+        if ($scope.feedback.agree && ($scope.feedback.mychannel == "")) {
+            $scope.invalidChannelSelection = true;
+        } else {
+            $scope.invalidChannelSelection = false;
+            Contact
+                .create($scope.feedback)
+                .$promise
+                .then(function(result) {
+                    $scope.feedback = {
+                                mychannel: "",
+                                firstName: "",
+                                lastName: "",
+                                agree: false,
+                                email: "",
+                                telno: "",
+                                feedback : ""
+                    };
+                    $scope.feedbackForm.$setPristine();
+                    $('.focus').focus();       
+                })
+                .catch(function(response) {
+                    $scope.message = "Error: "+response.status + " " + response.statusText;
+                    console.error('create Contact error', response.status, response.data);
+                });
+        }
+    };
 }])
 
 ;

@@ -1,0 +1,29 @@
+<div class="full-width">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+               <ul class="breadcrumb">
+                   <li><a href="index.html">Home</a></li>
+                   <li>Admin</li>
+                   <li class="active">Contacts</li>
+               </ul>
+            </div>
+        </div>
+        <div class="row">
+           <div class="col-xs-12">
+              <h3>Maintain Contacts</h3> 
+           </div>
+        </div>
+        <div class="row row-content">
+            <div class="list-group">
+                <a class="list-group-item" ng-repeat="feedback in contacts">
+              <p>{{feedback.firstName}} {{feedback.lastName | uppercase }} {{feedback.telno}}
+              {{feedback.email}} {{feedback.mychannel}}
+              </p>
+              <p>Comments: {{feedback.feedback}}</p>&nbsp;
+                    <i class="glyphicon glyphicon-remove pull-right"
+                        ng-click="removeContact(feedback)"></i></a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -77,6 +77,16 @@ partyNestApp.config(['$stateProvider', '$urlRouterProvider','$httpProvider', fun
             }
         }
     })
+    
+    .state('app.contactadm', {
+        url:'contactadm',
+        views: {
+            'content@': {
+                templateUrl : 'views/contactadm.html',
+                controller  : 'ContactAdmController'                  
+            }
+        }
+    })
               
     // route for the product detail page
     .state('app.productdetail', {
@@ -88,6 +98,18 @@ partyNestApp.config(['$stateProvider', '$urlRouterProvider','$httpProvider', fun
             }
         }
     })
+    
+    // route for the aboutus page
+    .state('app.contact', {
+        url:'contact',
+        views: {
+            'content@': {
+                templateUrl : 'views/contactus.html',
+                controller  : 'ContactController'                  
+            }
+        }
+    })
+    
     
     ;
 /*      .state('app', {

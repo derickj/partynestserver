@@ -49,15 +49,19 @@
     "dataSource": "partynestdb",
     "public": true
   },
-   "Wishlist": {
+  "Wishlist": {
     "dataSource": "partynestdb",
     "public": true
   },
-   "Message": {
+  "Message": {
     "dataSource": "partynestdb",
     "public": true
   },
-   "Featured": {
+  "Featured": {
+    "dataSource": "partynestdb",
+    "public": true
+  },
+  "Contact": {
     "dataSource": "partynestdb",
     "public": true
   }

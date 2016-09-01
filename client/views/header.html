@@ -23,23 +23,23 @@
                     <li ng-if="isAdminUser" class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <span class="glyphicon glyphicon-wrench"
-                         aria-hidden="true"></span>Admin<span class="caret"></span></a>
+                         aria-hidden="true"></span> Admin<span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a ui-sref="app.themeadm">Themes</a></li>
                             <li><a ui-sref="app.productadm">Products</a></li>
                             <li><a ui-sref="app.admin">Content</a></li>
+                            <li><a ui-sref="app.contactadm">Contacts</a></li>
                         </ul>
                     </li>
                     <!-- <li ng-if="!loggedIn"><a ui-sref="app.favorites">
-                     <span class="fa fa-heart-o" aria-hidden="true"></span> My Wishlist</a></li>
-                     <li><a ui-sref="app.contactus">
-                     <i class="fa fa-envelope-o"></i> Contact</a></li> -->
+                     <span class="fa fa-heart-o" aria-hidden="true"></span> My Wishlist</a></li> -->
+                     <li><a ui-sref="app.contact">
+                     <i class="fa fa-envelope-o"></i> Contact</a></li>
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
                     
-                <!--    <li ng-if="loggedIn"> -->
-                    <li>
+                    <li ng-if="loggedIn">
                         <a>{{username}}</a>
                     </li>
                     <li ng-if="!loggedIn"><a href="#" ng-click="openLogin()">
