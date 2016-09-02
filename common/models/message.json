@@ -6,6 +6,10 @@
     "validateUpsert": true
   },
   "properties": {
+      "msgkey": {
+      "type": "number",
+      "default": 0
+    },
     "msg": {
       "type": "string",
       "required": true,

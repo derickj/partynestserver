@@ -59,12 +59,12 @@ partyNestApp.config(['$stateProvider', '$urlRouterProvider','$httpProvider', fun
             }
         }
     })
-    .state('app.admin', {
-        url:'admin',
+    .state('app.homeadm', {
+        url:'homeadm',
         views: {
             'content@': {
-                templateUrl : 'views/themeadm.html',
-                controller  : 'ThemeController'                  
+                templateUrl : 'views/homeadm.html',
+                controller  : 'HomeAdmController'                  
             }
         }
     })    

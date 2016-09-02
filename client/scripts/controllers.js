@@ -392,18 +392,6 @@ echo '<img src="'.$src.'">'; */
     }
     getContacts();
 
-/*    $scope.addTheme = function() {
-      Theme
-        .create($scope.newTheme)
-        .$promise
-        .then(function(theme) {
-          $scope.newTheme = '';
-          $scope.themeForm.themename.$setPristine();
-          $('.focus').focus();
-          getThemes();
-        });
-    }; */
-
     $scope.removeContact = function(item) {
       Contact
         .deleteById({id: item.id})
@@ -412,6 +400,40 @@ echo '<img src="'.$src.'">'; */
           getContacts();
         });
     };
+  }])
+
+
+.controller('HomeAdmController', ['$scope', '$state', 'Message', 'Featured', function($scope,
+      $state, Message, Featured) {
+    
+    $scope.showMsg = false;
+    console.log("Home Adm Controller");
+    
+    function getMsg() {
+        Message.findOne()
+            .$promise
+            .then(function(results) {
+                $scope.message = results;
+                $scope.showMsg = true;
+                console.log("Retrieved message ",$scope.message);
+            });
+    } 
+    getMsg();
+    
+    $scope.updateMsg = function() { 
+        console.log("Attempting to update message to ",$scope.message);
+      Message
+        .replaceOrCreate({id: $scope.message.id, msgkey:0, msg: $scope.message.msg})
+        .$promise
+        .then(function() {
+          console.log("Updated message to ",$scope.message);
+        })
+        .catch(function(response) {
+          $scope.message.msg = "Error: "+response.status + " " + response.statusText;
+          console.error('updateMsg error', response.status, response.data);
+        });        
+    };
+
   }])
 
 .controller('ReviewController', ['$scope','$rootScope', '$stateParams', 'Product', 'Customer', function($scope, $rootScope, $stateParams, Product, Customer) {
@@ -465,6 +487,7 @@ echo '<img src="'.$src.'">'; */
 
 .controller('ContactController', ['$scope', 'Contact', function ($scope, Contact) {
 
+    $scope.loggedIn = false;
     $scope.feedback = {
         mychannel: "",
         firstName: "",
@@ -514,6 +537,26 @@ echo '<img src="'.$src.'">'; */
                 });
         }
     };
+    
+    $rootScope.$on('login:Successful', function () {
+        $scope.loggedIn = true;
+        $scope.user = Customer.getCachedCurrent();
+        if ($scope.user) {
+            $scope.feedback.firstname = $scope.user.username;
+            $scope.feedback.email = $scope.user.email;
+            console.log ("ContactCtrl received login broadcast",$scope.user);
+            
+        } else {
+            console.log ("ContactCtrl no cached user");            
+        }
+    });
+    
+    $rootScope.$on('logout', function () {
+        $scope.loggedIn = false;
+        console.log ("ContactCtrl Customer is no longer authenticated: ");
+        $scope.feedback.firstname = "";
+        $scope.feedback.email = "";
+    });
 }])
 
 ;
