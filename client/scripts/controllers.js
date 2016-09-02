@@ -164,10 +164,43 @@ angular
         });
     };
         
-    /*$scope.openRegister = function () {
+    $scope.openRegister = function () {
         ngDialog.open({ template: 'views/register.html', scope: $scope, className: 'ngdialog-theme-default dialoglarge', controller:"RegisterController" });
-    }; */
+    }; 
     
+}])
+
+.controller('RegisterController', ['$scope', 'ngDialog', 'Customer', 
+                                   function ($scope, ngDialog, Customer) {
+    
+    $scope.registration = {};
+    $scope.loginData = {};
+    
+    $scope.doRegister = function() {
+        $scope.registration.username = $scope.registration.email;
+        console.log('Doing registration', $scope.registration);
+        Customer
+            .create($scope.registration)
+        .$promise
+        .then(function(result) {
+            $scope.registration = {};
+            $scope.loginData = {};
+            console.log('Registered succesful', result);
+        })
+        .catch(function(response) {
+          $scope.message = "Error: "+response.status + " " + response.statusText;
+          console.error('doRegister error', response.status, response.data);
+          var message = '\
+            <div class="ngdialog-message">\
+            <div><h4>Registration unsuccessful</h4></div><div><p>' +
+            response.statusText + '</p></div>' +
+            '<div class="ngdialog-buttons">\
+                <button type="button" class="ngdialog-button ngdialog-button-primary" ng-click=confirm("OK")>OK</button>\
+                </div>'
+                    ngDialog.openConfirm({ template: message, plain: 'true'});
+        });
+        ngDialog.close();
+    };
 }])
 
 .controller('ProductController', ['$scope', '$state', 'Product', 'Theme', function($scope,
@@ -485,7 +518,8 @@ echo '<img src="'.$src.'">'; */
     });
 }])
 
-.controller('ContactController', ['$scope', 'Contact', function ($scope, Contact) {
+.controller('ContactController', ['$scope', '$rootScope', 'Contact', 
+                                  function ($scope, $rootScope, Contact) {
 
     $scope.loggedIn = false;
     $scope.feedback = {
