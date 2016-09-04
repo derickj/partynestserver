@@ -38,6 +38,22 @@
                 </form>
             </div>
         </div>
+        <div class="row">
+            <h3>Current home page objects</h3> 
+            <div class="list-group">
+                <a class="list-group-item" ng-repeat="featured in featureds">{{featured.productId}}&nbsp;
+                <i class="glyphicon glyphicon-remove pull-right"
+                        ng-click="removeProduct(featured)"></i></a>
+            </div>
+        </div>
+        <div class="row">
+            <h3>Products to add</h3> 
+            <div class="list-group">
+                <a class="list-group-item" ng-repeat="product in products">{{product.name}} {{product.id}}&nbsp;
+                <i class="glyphicon glyphicon-plus pull-right"
+                        ng-click="addProduct(product)"></i></a>
+            </div>
+        </div>
 <!--        <div class="row row-content">
                 <div class="list-group">
                     <a class="list-group-item" ng-repeat="theme in themes">{{theme.name}} {{theme.id}}&nbsp;

@@ -7,17 +7,48 @@
 
 angular
   .module('partyNestApp')
-  .controller('IndexController', ['$scope', '$state', 'Message', function($scope,
-      $state, Message) {
-      $scope.showMsg = false;
-                console.log("In Index Controller");
-            Message.findOne()
+  
+  .controller('IndexController', ['$scope', '$state', 'Message', 'Featured', 'Product',
+                        function($scope, $state, Message, Featured, Product) {
+    $scope.showMsg = false;
+    $scope.showFeatured = false;
+    $scope.featureds = [];
+    $scope.featuredmsg = "Loading data ...";
+                            
+    console.log("In Index Controller");
+    Message.findOne()
                 .$promise
                 .then(function(results) {
                     $scope.message = results;
                     $scope.showMsg = true;
                 console.log("Retrieved message ",$scope.message);
+    });
+    
+    function getFeatureds() {
+    Featured
+        .find({"filter" : {"include" : "product"}})
+        .$promise
+        .then(function(results) {
+            results.forEach(function(obj) {
+                if (obj.product.label == " ") {
+                    obj.product.label = "";
+                }
             });
+            $scope.featureds = results;
+            $scope.showFeatured = true;
+            $scope.featured = $scope.featureds[0].product;
+            $scope.featureds.splice(0,1);
+            console.log ("Featureds are:",results);
+        })
+        .catch(function(response) {
+          $scope.featuredmsg = "Error: "+response.status + " " + response.statusText;
+          console.error('getFeatureds error', response.status, response.data);
+        });
+    }
+    if (!$scope.showFeatured) {
+        getFeatureds();
+    }                        
+                            
   }])
 
 .controller('HeaderController', ['$scope', '$state', '$rootScope', 'ngDialog', 'Customer', 'Role', function ($scope, $state, $rootScope, ngDialog, Customer, Role) {
@@ -436,10 +467,13 @@ echo '<img src="'.$src.'">'; */
   }])
 
 
-.controller('HomeAdmController', ['$scope', '$state', 'Message', 'Featured', function($scope,
-      $state, Message, Featured) {
+.controller('HomeAdmController', ['$scope', '$state', 'Message', 'Featured', 'Product', 
+                            function($scope,$state, Message, Featured, Product) {
     
     $scope.showMsg = false;
+    $scope.products = [];
+    $scope.featureds = [];
+    $scope.showProducts = false;
     console.log("Home Adm Controller");
     
     function getMsg() {
@@ -466,6 +500,55 @@ echo '<img src="'.$src.'">'; */
           console.error('updateMsg error', response.status, response.data);
         });        
     };
+     
+    function getFeatureds() {
+    Featured
+        .find()
+        .$promise
+        .then(function(results) {
+          $scope.featureds = results;
+          console.log ("Featureds are:",results);
+        })
+        .catch(function(response) {
+          $scope.message = "Error: "+response.status + " " + response.statusText;
+          console.error('getFeatureds error', response.status, response.data);
+        });
+    }
+    getFeatureds();
+                                
+    $scope.removeProduct = function(item) {
+      Featured
+        .deleteById({id: item.id})
+        .$promise
+        .then(function() {
+          getFeatureds();
+        });
+    };
+
+    $scope.addProduct = function(item) {
+      Product
+        .prototype$__create__featured({id: item.id})
+        .$promise
+        .then(function() {
+          getFeatureds();
+        });
+    };
+
+    function getProducts() {
+    Product
+        .find()
+        .$promise
+        .then(function(results) {
+          $scope.products = results;
+          $scope.showProducts = true;
+          console.log ("Products are:",results);
+        })
+        .catch(function(response) {
+          $scope.message = "Error: "+response.status + " " + response.statusText;
+          console.error('getProducts error', response.status, response.data);
+        });
+    }
+    getProducts();
 
   }])
 
