@@ -14,13 +14,15 @@
             </div>
             <div class="col-xs-10" ng-if="showWishlist">
                 <div ng-repeat="item in wishlist">
+                    <div class="row">
+
                     <div class="col-xs-2">
                         <a ui-sref="app.productdetail({id: item.productId})">
                         <img width="150px"
                          ng-src={{item.product.image}} alt="{{item.product.name}}">
                         </a>
                     </div>
-                    <div class="col-xs-8">
+                    <div class="col-xs-10">
                         <h4>{{item.product.name}}
                          <span class="badge">{{item.product.unitprice | currency:"R"}}</span></h4>
                         <p>{{item.product.description}}</p>
@@ -41,6 +43,7 @@
                         ng-click="removeFromWishlist(item)"></i>
                     </div>  
 -->
+                </div>
                 </div>
             <!--    <div class = "row">
                 <div class="list-group">
