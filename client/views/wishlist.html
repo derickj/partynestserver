@@ -1,0 +1,64 @@
+<div class="full-width">
+<div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+               <ul class="breadcrumb">
+                   <li><a href="index.html">Home</a></li>
+                   <li class="active">My Wishlist</li>
+               </ul>
+            </div>
+        </div>
+        <div class="row row-content">
+            <div class="col-xs-12" ng-if="!showWishlist">
+                <h3>{{message}}</h3>
+            </div>
+            <div class="col-xs-10" ng-if="showWishlist">
+                <div ng-repeat="item in wishlist">
+                    <div class="col-xs-2">
+                        <a ui-sref="app.productdetail({id: item.productId})">
+                        <img width="150px"
+                         ng-src={{item.product.image}} alt="{{item.product.name}}">
+                        </a>
+                    </div>
+                    <div class="col-xs-8">
+                        <h4>{{item.product.name}}
+                         <span class="badge">{{item.product.unitprice | currency:"R"}}</span></h4>
+                        <p>{{item.product.description}}</p>
+                        <i class="glyphicon glyphicon-remove pull-right"
+                        ng-click="removeFromWishlist(item)"></i>
+                    </div>
+                <!--    <div class="media-left media-middle">
+                        <a ui-sref="app.productdetail({id: item.productId})">
+                        <img class="media-object img-thumbnail"
+                         ng-src={{item.product.image}} alt="{{item.product.name}}">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">{{item.product.name}}
+                         <span class="badge">{{item.product.unitprice | currency:"R"}}</span></h4>
+                        <p>{{item.product.description}}</p>
+                        <i class="glyphicon glyphicon-remove pull-right"
+                        ng-click="removeFromWishlist(item)"></i>
+                    </div>  
+-->
+                </div>
+            <!--    <div class = "row">
+                <div class="list-group">
+                    
+                   <a class="list-group-item" ng-repeat="item in wishlist">{{item.product.name}} {{item.product.unitprice | currency:"R"}}&nbsp;
+                    <i class="glyphicon glyphicon-remove pull-right"
+                        ng-click="removeFromWishlist(item)"></i></a>
+                </div>
+                </div>
+                <div class = "row">
+                <div  class="product-listing col-xs-6 col-sm-4" ng-repeat="item in wishlist">
+                        <a ui-sref="app.productdetail({id: item.productId})">
+                        <img class="img-responsive"
+                         ng-src={{item.product.image}} alt="{{item.product.name}}">
+                        </a>
+                </div>
+                </div>--> 
+            </div>  
+        </div>
+    </div>
+</div>

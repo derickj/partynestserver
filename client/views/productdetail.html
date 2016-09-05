@@ -1,6 +1,6 @@
 
 <div class="full-width">
-<div class="container" ng-controller="ProductDetailController">
+<div class="container">
         <div class="row row-content">
             <div class="col-xs-12" ng-if="!showProduct">
                 <h3>{{message}}</h3>
@@ -15,10 +15,12 @@
                     type="button">
                     <p></p>
                 </button>
-                <button class="btn btn-xs btn-success"
-                    type="button">
-                    Add to Wishlist
-                </button>
+                <div ng-if="loggedIn">
+                    <button class="btn btn-xs btn-success"
+                        type="button" ng-click="addToWishlist(product.id)">
+                        Add to My Wishlist
+                    </button>
+                </div>
                 </div>
                 <div class="media-left media-middle">
                         <a href="#">

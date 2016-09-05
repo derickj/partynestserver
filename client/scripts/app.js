@@ -49,6 +49,17 @@ partyNestApp.config(['$stateProvider', '$urlRouterProvider','$httpProvider', fun
         }
     })
     
+    // route for the wishlist page
+    .state('app.wishlist', {
+        url:'wishlist',
+        views: {
+            'content@': {
+                templateUrl : 'views/wishlist.html',
+                controller  : 'WishlistController'                  
+            }
+        }
+    })
+    
     // routes for the admin pages
     .state('app.themeadm', {
         url:'themeadm',

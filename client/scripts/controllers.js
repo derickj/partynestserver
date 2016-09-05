@@ -51,7 +51,8 @@ angular
                             
   }])
 
-.controller('HeaderController', ['$scope', '$state', '$rootScope', 'ngDialog', 'Customer', 'Role', function ($scope, $state, $rootScope, ngDialog, Customer, Role) {
+.controller('HeaderController', ['$scope', '$state', '$rootScope', 'ngDialog', 'Customer', 'Role', 
+                                 function ($scope, $state, $rootScope, ngDialog, Customer, Role) {
 
     $scope.loggedIn = false;
     $scope.username = '...';
@@ -282,6 +283,64 @@ angular
       
   }])
 
+.controller('WishlistController', ['$scope', '$state', '$rootScope', 'Customer', 'Product', 'Wishlist', 
+                                 function ($scope, $state, $rootScope, Customer, Product, Wishlist) {
+
+    $scope.loggedIn = false;
+    $scope.wishlist = [];
+    $scope.nItems = 0;
+    $scope.userId = "";
+
+    if (Customer.isAuthenticated()) {
+        console.log ("WishlistCtrl Customer is already authenticated: ");
+        $scope.userId = Customer.getCurrentId();
+        $scope.loggedIn = true;
+    }
+    else 
+    {
+        console.log ("Customer is not authenticated in WishlistCtrl: ");
+        $scope.loggedIn = false;
+    }
+        
+    $rootScope.$on('logout', function () {
+        console.log ("WishlistController Customer is no longer authenticated: ");
+        $scope.loggedIn = false;
+        $scope.nItems = 0;
+        $scope.wishlist = [];
+        $scope.userId =  "";
+    });
+     
+                         
+    function getWishlist() {
+    Customer
+        .wishlists({id:$scope.userId, "filter" : {"include" : "product"}})
+        .$promise
+        .then(function(results) {
+            $scope.wishlist = results;
+            $scope.nItems = $scope.wishlist.length;
+            $scope.showWishlist = true;
+            console.log ("Wishlist is:",$scope.wishlist);
+        })
+        .catch(function(response) {
+          $scope.message = "Error: "+response.status + " " + response.statusText;
+          console.error('getWishlist error', response.status, response.data);
+        });
+    }
+    if ($scope.loggedIn) {                                
+        getWishlist();
+    }
+                                     
+    $scope.removeFromWishlist = function(item) {
+      Wishlist
+        .deleteById({id: item.id})
+        .$promise
+        .then(function() {
+          getWishlist();
+        });
+    };
+    
+}])
+
 .controller('ThemeController', ['$scope', '$state', 'Theme', function($scope,
       $state, Theme) {
     $scope.themes = [];
@@ -396,14 +455,35 @@ echo '<img src="'.$src.'">'; */
     
   }])
 
-.controller('ProductDetailController', ['$scope', '$stateParams', 'Product', function($scope, $stateParams, Product) {
+.controller('ProductDetailController', ['$scope', '$rootScope', '$stateParams', 'Product', 'Customer', 'Wishlist',
+                                        function($scope, $rootScope, $stateParams, Product, Customer, Wishlist) {
 
     $scope.product = {};
     $scope.reviews = [];
     $scope.showProduct = false;
     $scope.showReviews = false;
     $scope.message="Loading ...";
+    $scope.loggedIn = false;
+    $scope.userId = "";
+
+    if (Customer.isAuthenticated()) {
+        console.log ("ProductDetailCtl Customer is already authenticated: ");
+        $scope.userId = Customer.getCurrentId();
+        $scope.loggedIn = true;
+    }
+    else 
+    {
+        console.log ("Customer is not authenticated in ProductDetailCtrl: ");
+        $scope.loggedIn = false;
+    }
+        
+    $rootScope.$on('logout', function () {
+        console.log ("ProductDetailCtl Customer is no longer authenticated: ");
+        $scope.loggedIn = false;
+        $scope.userId =  "";
+    });
     
+                                            
     function getProduct() {
     Product
         .findById({id:$stateParams.id})
@@ -438,7 +518,22 @@ echo '<img src="'.$src.'">'; */
         });
     }
     getReviews();
-    
+                                            
+    $scope.addToWishlist = function(productid) {
+        
+      console.log ("adding to customer product ", $scope.userId, productid);
+      Wishlist
+        .create({customerId: $scope.userId, productId: productid })
+        .$promise
+        .then(function() {
+          console.log ("added to customer product ", $scope.userId, productid);
+        })
+        .catch(function(response) {
+          $scope.message = "Error: "+response.status + " " + response.statusText;
+          console.error('wishlists.create error', response.status, response.data);
+        });;
+    };
+            
 }])
 
 .controller('ContactAdmController', ['$scope', '$state', 'Contact', function($scope,
