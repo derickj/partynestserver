@@ -96,9 +96,27 @@ body {
   border-right: 1px solid #dddddd;
   padding: 10px;
 }
+
 .affix {
   top: 100px;
+} 
+/* 
+.affix {
+  top: 100px;
+  width: 100%;
+  position:fixed;
 }
+
+.affix-top {
+  width: 100%;
+}
+
+.affix-bottom {
+  position: absolute;
+  width: 100%;  
+}
+*/
+
 #carouselButtons {
   bottom: 0px;
   position: absolute;

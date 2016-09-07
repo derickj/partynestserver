@@ -51,10 +51,82 @@ angular
                             
   }])
 
-.controller('HeaderController', ['$scope', '$state', '$rootScope', 'ngDialog', 'Customer', 'Role', 
-                                 function ($scope, $state, $rootScope, ngDialog, Customer, Role) {
+.controller('HeaderController', ['$scope', '$state', '$rootScope', 'ngDialog', 'AuthService', 'Role', 
+                                 function ($scope, $state, $rootScope, ngDialog, AuthService, Role) {
 
     $scope.loggedIn = false;
+    $scope.isAdminUser = false;
+    $scope.username = '';
+    $scope.userId = '';
+    $scope.admins = {principalid : 0};
+    
+    Role.findOne(function (response) {
+        console.log ("role found", response);
+        if (response.name == "admin"){
+            console.log ("admin role found", response.id, response);
+            Role.prototype$__get__principals ({id : response.id}, function (principals){
+                var cnt = principals.length;
+                console.log ("n principals with admin role found", cnt, principals);
+                $scope.admins.principalId = principals[0].principalId;
+            });
+        }
+        else {
+            console.log ("admin role not found", response);
+        }
+    });
+                                     
+    function testAdminRole (userid) {
+        var found = false;
+        if ($scope.admins.principalId == userid) {
+            console.log ("admin user found", $scope.admins.principalId);
+            found = true;
+        }
+        else {
+            console.log ("admin user not found", $scope.admins.principalId, userid);
+        }
+        return (found);
+    };
+                                     
+    if(AuthService.isAuthenticated()) {
+        console.log ("HeaderCtrl Customer is already authenticated: ");
+        $scope.loggedIn = true;
+        $scope.username = AuthService.getUsername();
+        $scope.userId = AuthService.getUserid();
+        $scope.isAdminUser = testAdminRole($scope.userId);
+    }
+        
+    $scope.openLogin = function () {
+        ngDialog.open({ template: 'views/login.html', scope: $scope, className: 'ngdialog-theme-default', controller:"LoginController" });
+    };
+    
+    $scope.logOut = function() {
+       AuthService.logout();
+        $scope.loggedIn = false;
+        $scope.username = '';
+        $scope.userId = '';
+        $scope.isAdminUser = false;
+    };
+    
+    $rootScope.$on('login:Successful', function () {
+        $scope.loggedIn = AuthService.isAuthenticated();
+        $scope.username = AuthService.getUsername();
+        $scope.userId = AuthService.getUserid();
+        $scope.isAdminUser = testAdminRole($scope.userId);  
+    });
+        
+    $rootScope.$on('registration:Successful', function () {
+        $scope.loggedIn = AuthService.isAuthenticated();
+        if ($scope.loggedIn) {
+            $scope.username = AuthService.getUsername();
+            $scope.userId = AuthService.getUserid();
+        }
+    });
+    
+    $scope.stateis = function(curstate) {
+       return $state.is(curstate);  
+    };
+
+/*    $scope.loggedIn = false;
     $scope.username = '...';
     $scope.isAdminUser = false;
     $scope.admins = {principalid : 0};
@@ -130,32 +202,44 @@ angular
         $scope.username = $scope.user.username;
         console.log ("HeaderCtrl received login broadcast",$scope.user);
         $scope.isAdminUser = testAdminRole($scope.user.id);
-    });
+    }); */
         
 /*    $rootScope.$on('registration:Successful', function () {
         $scope.loggedIn = AuthFactory.isAuthenticated();
         $scope.username = AuthFactory.getUsername();
     });
 */    
-    $scope.stateis = function(curstate) {
+/*    $scope.stateis = function(curstate) {
        return $state.is(curstate);  
-    };
+    }; */
     
 }])
 
-    .controller('LoginController', ['$scope', '$rootScope', '$location', 'ngDialog', 'Customer', 
-                function ($scope, $rootScope, $location, ngDialog, Customer) {
+    .controller('LoginController', ['$scope', '$rootScope', 'ngDialog', '$localStorage', 'AuthService', 
+                function ($scope, $rootScope, ngDialog, $localStorage, AuthService) {
     
-    /*$scope.loginData = $localStorage.getObject('userinfo','{}'); */
-    $scope.loginData = {
+    $scope.loginData = $localStorage.getObject('userinfo','{}'); 
+    /*$scope.loginData = {
       username : "",
       email : "",
       password : "",
       token : ""
-    };
-    $scope.user = {};
+    }; 
+                 
+    $scope.user = {}; */
     $scope.rememberMe = 0;
-    if (Customer.isAuthenticated()) {
+                    
+    $scope.doLogin = function() {
+        if($scope.rememberMe)
+           $localStorage.storeObject('userinfo',$scope.loginData);
+
+        AuthService.login($scope.loginData);
+
+        ngDialog.close();
+
+    };
+                    
+ /*   if (Customer.isAuthenticated()) {
         $scope.user = Customer.getCachedCurrent();
         console.log ("LognCtrl Customer is already authenticated: ", $scope.user);
         $rootScope.$broadcast('login:Successful');
@@ -194,18 +278,29 @@ angular
                 </div>'
                     ngDialog.openConfirm({ template: message, plain: 'true'});
         });
-    };
-        
+    }; */
+      
     $scope.openRegister = function () {
         ngDialog.open({ template: 'views/register.html', scope: $scope, className: 'ngdialog-theme-default dialoglarge', controller:"RegisterController" });
     }; 
     
 }])
 
-.controller('RegisterController', ['$scope', 'ngDialog', 'Customer', 
-                                   function ($scope, ngDialog, Customer) {
+.controller('RegisterController', ['$scope', 'ngDialog', 'AuthService', 
+                                   function ($scope, ngDialog, AuthService) {
+ 
+    $scope.registration={};
+    $scope.loginData={};
     
-    $scope.registration = {};
+    $scope.doRegister = function() {
+
+        AuthService.register($scope.registration);
+        
+        ngDialog.close();
+
+    };
+                                       
+/*    $scope.registration = {};
     $scope.loginData = {};
     
     $scope.doRegister = function() {
@@ -232,7 +327,8 @@ angular
                     ngDialog.openConfirm({ template: message, plain: 'true'});
         });
         ngDialog.close();
-    };
+    }; */
+                                       
 }])
 
 .controller('ProductController', ['$scope', '$state', 'Product', 'Theme', function($scope,
@@ -283,17 +379,17 @@ angular
       
   }])
 
-.controller('WishlistController', ['$scope', '$state', '$rootScope', 'Customer', 'Product', 'Wishlist', 
-                                 function ($scope, $state, $rootScope, Customer, Product, Wishlist) {
+.controller('WishlistController', ['$scope', '$state', '$rootScope', 'AuthService', 'Customer', 'Product', 'Wishlist', 
+                                 function ($scope, $state, $rootScope, AuthService, Customer, Product, Wishlist) {
 
     $scope.loggedIn = false;
     $scope.wishlist = [];
     $scope.nItems = 0;
     $scope.userId = "";
 
-    if (Customer.isAuthenticated()) {
+    if (AuthService.isAuthenticated()) {
         console.log ("WishlistCtrl Customer is already authenticated: ");
-        $scope.userId = Customer.getCurrentId();
+        $scope.userId = AuthService.getUserid();
         $scope.loggedIn = true;
     }
     else 
@@ -455,8 +551,8 @@ echo '<img src="'.$src.'">'; */
     
   }])
 
-.controller('ProductDetailController', ['$scope', '$rootScope', '$stateParams', 'Product', 'Customer', 'Wishlist',
-                                        function($scope, $rootScope, $stateParams, Product, Customer, Wishlist) {
+.controller('ProductDetailController', ['$scope', '$rootScope', '$stateParams', 'Product', 'AuthService', 'Wishlist',
+                                        function($scope, $rootScope, $stateParams, Product, AuthService, Wishlist) {
 
     $scope.product = {};
     $scope.reviews = [];
@@ -466,9 +562,9 @@ echo '<img src="'.$src.'">'; */
     $scope.loggedIn = false;
     $scope.userId = "";
 
-    if (Customer.isAuthenticated()) {
+    if (AuthService.isAuthenticated()) {
         console.log ("ProductDetailCtl Customer is already authenticated: ");
-        $scope.userId = Customer.getCurrentId();
+        $scope.userId = AuthService.getUserid();
         $scope.loggedIn = true;
     }
     else 
@@ -482,7 +578,6 @@ echo '<img src="'.$src.'">'; */
         $scope.loggedIn = false;
         $scope.userId =  "";
     });
-    
                                             
     function getProduct() {
     Product
@@ -647,17 +742,22 @@ echo '<img src="'.$src.'">'; */
 
   }])
 
-.controller('ReviewController', ['$scope','$rootScope', '$stateParams', 'Product', 'Customer', function($scope, $rootScope, $stateParams, Product, Customer) {
+.controller('ReviewController', ['$scope','$rootScope', '$stateParams', 'Product', 'AuthService', function($scope, $rootScope, $stateParams, Product, AuthService) {
             
     $scope.newcomment = {rating:5, review:"", productId:"", customerId:""};
     $scope.newcomment.productId = $stateParams.id;    
 
     $scope.loggedIn = false;
-    
-    if (Customer.isAuthenticated()) {
-        $scope.newcomment.customerId = Customer.getCurrentId();
-        console.log ("LognCtrl Customer is already authenticated: ",$scope.newcomment.customerId);
+
+    if (AuthService.isAuthenticated()) {
+        $scope.newcomment.customerId = AuthService.getUserid();
+        console.log ("ReviewCtl Customer is already authenticated: ",$scope.newcomment.customerId);
         $scope.loggedIn = true;
+    }
+    else 
+    {
+        console.log ("Customer is not authenticated in ReviewCtrl: ");
+        $scope.loggedIn = false;
     }
     
     $scope.submitComment = function (form) {
@@ -675,18 +775,16 @@ echo '<img src="'.$src.'">'; */
           console.error('createReview error', response.status, response.data);
         });
         
-        //$scope.dish.comments.push($scope.newcomment);
-        //menuFactory.getDishes().update({id:$scope.dish.id},$scope.dish);
         form.$setPristine();
         $scope.newcomment = {rating:5, review:"", productId:"", customerId:""};
         $scope.newcomment.productId = $stateParams.id;
-        $scope.newcomment.customerId = Customer.getCurrentId();
+        $scope.newcomment.customerId = AuthService.getUserid();
     };
     
     $rootScope.$on('login:Successful', function () {
         $scope.loggedIn = true;
+        $scope.newcomment.customerId = AuthService.getUserid();
         console.log ("ReviewController Customer is now authenticated: ",$scope.newcomment.customerId);
-        $scope.newcomment.customerId =  Customer.getCurrentId();
     });
     
     $rootScope.$on('logout', function () {
@@ -696,8 +794,8 @@ echo '<img src="'.$src.'">'; */
     });
 }])
 
-.controller('ContactController', ['$scope', '$rootScope', 'Contact', 
-                                  function ($scope, $rootScope, Contact) {
+.controller('ContactController', ['$scope', '$rootScope', 'Contact', 'AuthService',
+                                  function ($scope, $rootScope, Contact, AuthService) {
 
     $scope.loggedIn = false;
     $scope.feedback = {
@@ -721,6 +819,17 @@ echo '<img src="'.$src.'">'; */
     $scope.channels = channels;
     $scope.invalidChannelSelection = false;
 
+    if (AuthService.isAuthenticated()) {
+        $scope.feedback.firstName = AuthService.getUsername();
+        console.log ("ContactCtl Customer is already authenticated: ",$scope.feedback.firstName);
+        $scope.loggedIn = true;
+    }
+    else 
+    {
+        console.log ("Customer is not authenticated in ContactCtrl: ");
+        $scope.loggedIn = false;
+    }
+                                      
     $scope.sendFeedback = function () {
         console.log('Trying to create ', $scope.feedback);
         if ($scope.feedback.agree && ($scope.feedback.mychannel == "")) {
@@ -750,25 +859,20 @@ echo '<img src="'.$src.'">'; */
         }
     };
     
-    $rootScope.$on('login:Successful', function () {
+/*    $rootScope.$on('login:Successful', function () {
         $scope.loggedIn = true;
-        $scope.user = Customer.getCachedCurrent();
-        if ($scope.user) {
-            $scope.feedback.firstname = $scope.user.username;
-            $scope.feedback.email = $scope.user.email;
-            console.log ("ContactCtrl received login broadcast",$scope.user);
-            
-        } else {
-            console.log ("ContactCtrl no cached user");            
-        }
+        $scope.username = AuthService.getUsername();
+        $scope.feedback.firstname = $scope.username;
+        console.log ("ContactCtrl received login broadcast",$scope.username); 
     });
     
     $rootScope.$on('logout', function () {
         $scope.loggedIn = false;
         console.log ("ContactCtrl Customer is no longer authenticated: ");
         $scope.feedback.firstname = "";
-        $scope.feedback.email = "";
+        $scope.username = "";
     });
+    */
 }])
 
 ;
