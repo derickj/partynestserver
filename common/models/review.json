@@ -14,6 +14,10 @@
       "required": true,
       "default": 5
     },
+    "author": {
+      "type": "string",
+      "default": "user"
+    },
     "review": {
       "type": "string",
       "required": true,

@@ -51,14 +51,14 @@ angular
                             
   }])
 
-.controller('HeaderController', ['$scope', '$state', '$rootScope', 'ngDialog', 'AuthService', 'Role', 
-                                 function ($scope, $state, $rootScope, ngDialog, AuthService, Role) {
+.controller('HeaderController', ['$scope', '$state', '$rootScope', 'ngDialog', 'AuthService', 
+                                 function ($scope, $state, $rootScope, ngDialog, AuthService) {
 
     $scope.loggedIn = false;
     $scope.isAdminUser = false;
     $scope.username = '';
     $scope.userId = '';
-    $scope.admins = {principalid : 0};
+  /*  $scope.admins = {principalid : 0};
     
     Role.findOne(function (response) {
         console.log ("role found", response);
@@ -86,13 +86,14 @@ angular
         }
         return (found);
     };
+*/
                                      
     if(AuthService.isAuthenticated()) {
         console.log ("HeaderCtrl Customer is already authenticated: ");
         $scope.loggedIn = true;
         $scope.username = AuthService.getUsername();
         $scope.userId = AuthService.getUserid();
-        $scope.isAdminUser = testAdminRole($scope.userId);
+        $scope.isAdminUser = AuthService.testAdminRole($scope.userId);
     }
         
     $scope.openLogin = function () {
@@ -111,7 +112,7 @@ angular
         $scope.loggedIn = AuthService.isAuthenticated();
         $scope.username = AuthService.getUsername();
         $scope.userId = AuthService.getUserid();
-        $scope.isAdminUser = testAdminRole($scope.userId);  
+        $scope.isAdminUser = AuthService.testAdminRole($scope.userId);  
     });
         
     $rootScope.$on('registration:Successful', function () {
@@ -333,7 +334,7 @@ angular
 
 .controller('ProductController', ['$scope', '$state', 'Product', 'Theme', function($scope,
       $state, Product, Theme) {
-    $scope.tab = 1;
+
     $scope.filtText = "";
     $scope.showDetails = false;
     $scope.showProducts = false;
@@ -477,8 +478,9 @@ angular
 .controller('ProductAdmController', ['$scope', '$state', 'Product', function($scope,
       $state, Product) {
     $scope.products = [];
-    $scope.newProduct = {name :"", description: "", unitprice: 0, image : ""};
+    $scope.newProduct = {name :"", description: "", label: " ", unitprice: 0, image : ""};
     $scope.canloadfiles = true;
+    $scope.filetoobig = false;
     
     if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
         console.log("The File APIs are not fully supported in the browser.");
@@ -501,20 +503,43 @@ angular
     }
     getProducts();
 
+    $scope.updateProduct = function() {
+        console.log ("Product to update:",$scope.newProduct);
+      Product
+        .replaceOrCreate($scope.newProduct)
+        .$promise
+        .then(function(prod) {
+          $scope.newProduct = {name :"", description: "", label: " ", unitprice: 0, image : ""};
+          $scope.productForm.productname.$setPristine();
+          $('.focus').focus();
+          getProducts();
+        });
+    };
+    
     $scope.addProduct = function() {
       Product
         .create($scope.newProduct)
         .$promise
         .then(function(prod) {
-          $scope.newProduct = {name :"", description: "", unitprice: 0, image : ""};
+          $scope.newProduct = {name :"", description: "", label: " ", unitprice: 0, image : ""};
           $scope.productForm.productname.$setPristine();
           $('.focus').focus();
           getProducts();
         });
     };
 
+    $scope.editProduct = function(item) {
+        $scope.newProduct = {name :"", description: "", label: " ",  unitprice: 0, image : ""};
+        $scope.newProduct.id = item.id;
+        $scope.newProduct.name = item.name;
+        $scope.newProduct.description = item.description;
+        $scope.newProduct.label = item.label;
+        $scope.newProduct.unitprice = item.unitprice;
+        $scope.newProduct.image = item.image;
+    };
+    
     $scope.removeProduct = function(item) {
-      Theme
+      Product
         .deleteById({id: item.id})
         .$promise
         .then(function() {
@@ -533,6 +558,13 @@ angular
             }
             
             reader.readAsDataURL(input.files[0]);
+            if (input.files[0].size > 30000) {
+                console.log("File too big: ", input.files[0]);
+                $scope.filetoobig = true;
+            }
+            else {
+                $scope.filetoobig = false;                
+            }
         }
     };
     
@@ -744,13 +776,14 @@ echo '<img src="'.$src.'">'; */
 
 .controller('ReviewController', ['$scope','$rootScope', '$stateParams', 'Product', 'AuthService', function($scope, $rootScope, $stateParams, Product, AuthService) {
             
-    $scope.newcomment = {rating:5, review:"", productId:"", customerId:""};
+    $scope.newcomment = {rating:5, author: "", review:"", productId:"", customerId:""};
     $scope.newcomment.productId = $stateParams.id;    
 
     $scope.loggedIn = false;
 
     if (AuthService.isAuthenticated()) {
         $scope.newcomment.customerId = AuthService.getUserid();
+        $scope.newcomment.author = AuthService.getUsername();
         console.log ("ReviewCtl Customer is already authenticated: ",$scope.newcomment.customerId);
         $scope.loggedIn = true;
     }
@@ -776,14 +809,16 @@ echo '<img src="'.$src.'">'; */
         });
         
         form.$setPristine();
-        $scope.newcomment = {rating:5, review:"", productId:"", customerId:""};
+        $scope.newcomment = {rating:5, author: "", review:"", productId:"", customerId:""};
         $scope.newcomment.productId = $stateParams.id;
         $scope.newcomment.customerId = AuthService.getUserid();
+        $scope.newcomment.author = AuthService.getUsername();
     };
     
     $rootScope.$on('login:Successful', function () {
         $scope.loggedIn = true;
         $scope.newcomment.customerId = AuthService.getUserid();
+        $scope.newcomment.author = AuthService.getUsername();
         console.log ("ReviewController Customer is now authenticated: ",$scope.newcomment.customerId);
     });
     
@@ -799,7 +834,7 @@ echo '<img src="'.$src.'">'; */
 
     $scope.loggedIn = false;
     $scope.feedback = {
-        mychannel: "",
+        mychannel: "email",
         firstName: "",
         lastName: "",
         agree: false,
@@ -812,7 +847,7 @@ echo '<img src="'.$src.'">'; */
         value: "tel",
         label: "Tel."
     }, {
-        value: "Email",
+        value: "email",
         label: "Email"
     }];
 
@@ -836,12 +871,12 @@ echo '<img src="'.$src.'">'; */
             $scope.invalidChannelSelection = true;
         } else {
             $scope.invalidChannelSelection = false;
-            Contact
+            /* Contact
                 .create($scope.feedback)
                 .$promise
                 .then(function(result) {
                     $scope.feedback = {
-                                mychannel: "",
+                                mychannel: "email",
                                 firstName: "",
                                 lastName: "",
                                 agree: false,
@@ -849,14 +884,29 @@ echo '<img src="'.$src.'">'; */
                                 telno: "",
                                 feedback : ""
                     };
+                    console.log ("CLearing form successful create..");
                     $scope.feedbackForm.$setPristine();
-                    $('.focus').focus();       
+                    $('.focus').focus(); 
                 })
                 .catch(function(response) {
                     $scope.message = "Error: "+response.status + " " + response.statusText;
                     console.error('create Contact error', response.status, response.data);
-                });
+                }); */
+            Contact.create($scope.feedback);
+            $scope.feedback = {
+                                mychannel: "email",
+                                firstName: "",
+                                lastName: "",
+                                agree: false,
+                                email: "",
+                                telno: "",
+                                feedback : "" 
+            };
+            console.log ("CLearing form ..");
+            $scope.feedbackForm.$setPristine();
+            $('.focus').focus();  
         }
+        //contactForm.$setPristine();
     };
     
 /*    $rootScope.$on('login:Successful', function () {

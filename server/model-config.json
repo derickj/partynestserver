@@ -64,5 +64,8 @@
   "Contact": {
     "dataSource": "partynestdb",
     "public": true
+  },
+  "Email": {
+    "dataSource": "myEmail"
   }
 }

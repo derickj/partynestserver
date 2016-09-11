@@ -2,8 +2,38 @@
 
 angular
   .module('partyNestApp')
-  .factory('AuthService', ['Customer', '$q', '$rootScope', 'ngDialog', 
-                           function(Customer, $q, $rootScope, ngDialog) {
+  .factory('AuthService', ['Customer', 'Role', '$q', '$rootScope', 'ngDialog', 
+                           function(Customer, Role, $q, $rootScope, ngDialog) {
+							   
+	$rootScope.admins = {principalid : 0};
+    
+    Role.findOne(function (response) {
+        console.log ("role found", response);
+        if (response.name == "admin"){
+            console.log ("admin role found", response.id, response);
+            Role.prototype$__get__principals ({id : response.id}, function (principals){
+                var cnt = principals.length;
+                console.log ("n principals with admin role found", cnt, principals);
+                $rootScope.admins.principalId = principals[0].principalId;
+            });
+        }
+        else {
+            console.log ("admin role not found", response);
+        }
+    });
+                                     
+    function testAdminRole (userid) {
+        var found = false;
+        if ($rootScope.admins.principalId == userid) {
+            console.log ("admin user found", $rootScope.admins.principalId);
+            found = true;
+        }
+        else {
+            console.log ("admin user not found", $rootScope.admins.principalId, userid);
+        }
+        return (found);
+    };
+	
     function login(loginData) {
       return Customer
         .login(loginData)
@@ -96,7 +126,8 @@ angular
       register: register,
       isAuthenticated: isAuthenticated,
       getUsername: getUsername,
-      getUserid: getUserid
+      getUserid: getUserid,
+	  testAdminRole: testAdminRole
     };
   }])
 

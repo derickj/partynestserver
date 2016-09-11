@@ -17,7 +17,7 @@
         <div class="row row-content">
             <div class="col-xs-12 col-sm-10"> 
                 <form class="form-horizontal" role="form" 
-                      name="productForm" ng-submit="addProduct()" novalidate>
+                      name="productForm" ng-submit="updateProduct()" novalidate>
                     <div class="form-group" ng-class="{ 'has-error' : productForm.productname.$invalid && productForm.productname.$dirty }">
                         <label for="productname" class="col-sm-2 control-label">Product Name</label>
                         <div class="col-sm-10">
@@ -50,11 +50,14 @@
                     </div> 
                     <div class="form-group">
                         <label for="productImage" class="col-sm-2 control-label">Image file</label>
-                        <div class="col-xs-6 col-sm-4">
+                        <div class="col-sm-3">
                             <input type='file' id="productImage" name="productImage">
                         </div>
-                        <div class="col-xs-6 col-sm-4">
+                        <div class="col-sm-3">
                             <img id="blah" src="images/colorlogo.png" alt="your image" height="100">
+                        </div>
+                        <div class="col-sm-4">
+                            <img id="oldimage" ng-src={{newProduct.image}} alt="{{newProduct.name}}" height="100">
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-10" ng-if="!canloadfiles">
@@ -62,7 +65,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                            <button type="submit" class="btn btn-primary" ng-disabled="productForm.$invalid">Submit</button>
+                            <button type="submit" class="btn btn-primary" ng-disabled="productForm.$invalid || filetoobig">Submit</button>
                         </div>
                     </div>
 
@@ -75,9 +78,11 @@
         </div> -->
         <div class="row">
                 <div class="list-group">
-                    <a class="list-group-item" ng-repeat="product in products">{{product.name}} {{product.id}}&nbsp;
+                    <a class="list-group-item" ng-repeat="product in products">{{product.name}} {{product.unitprice}} {{product.label}} {{product.id}}&nbsp;
                     <i class="glyphicon glyphicon-trash pull-right"
-                        ng-click="removeProduct(product)"></i></a>
+                        ng-click="removeProduct(product)"></i>
+                    <i class="glyphicon glyphicon-pencil pull-left"
+                        ng-click="editProduct(product)"></i></a>
                 </div>
         </div>
     </div>

@@ -3,7 +3,7 @@ module.exports = function(Product) {
 Product.disableRemoteMethod('upsert', true);                // Removes (PUT) /products
 Product.disableRemoteMethod('deleteById', true);            // Removes (DELETE) /products/:id
 Product.disableRemoteMethod('replaceById', true);            // Removes (PUT) /products/:id
-Product.disableRemoteMethod('replaceOrCreate', true);            // Removes (POST) /replaceOrCreate
+// Product.disableRemoteMethod('replaceOrCreate', true);            // Removes (POST) /replaceOrCreate
 Product.disableRemoteMethod("updateAll", true);               // Removes (POST) /products/update
 Product.disableRemoteMethod("updateAttributes", false);       // Removes (PUT) /products/:id
 Product.disableRemoteMethod('createChangeStream', true);    // removes (GET|POST) /products/change-stream
