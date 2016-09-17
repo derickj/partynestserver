@@ -5,7 +5,7 @@ module.exports = function(Contact) {
   Contact.sendEmail = function(request, cb) {
     Contact.app.models.Email.send({
       to: 'ourpartynest@gmail.com',
-      from: 'ourpartynest@gmail.com',
+      from: 'partynestserver@gmail.com',
       subject: 'New Contact Request from ' + request.firstName + ' ' + request.lastName,
       text: request.feedback,
       html: '<em>Contact Request:</em><br>' + 
