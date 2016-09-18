@@ -26,7 +26,7 @@ angular
     
     function getFeatureds() {
     Featured
-        .find({"filter" : {"include" : "product"}})
+        .find({"filter" : {"order": "first", "include" : "product"}})
         .$promise
         .then(function(results) {
             results.forEach(function(obj) {
@@ -697,6 +697,7 @@ echo '<img src="'.$src.'">'; */
     $scope.featureds = [];
     $scope.showProducts = false;
     console.log("Home Adm Controller");
+    $scope.first = 0;
     
     function getMsg() {
         Message.findOne()
@@ -725,7 +726,7 @@ echo '<img src="'.$src.'">'; */
      
     function getFeatureds() {
     Featured
-        .find()
+        .find({"filter" : {"order": "first"}})
         .$promise
         .then(function(results) {
           $scope.featureds = results;
@@ -744,6 +745,23 @@ echo '<img src="'.$src.'">'; */
         .$promise
         .then(function() {
           getFeatureds();
+        });
+    };
+
+    $scope.updateFeaturedList = function(item) {
+        Featured
+        .updateAll({"where" : {"first":0}}, {"first":1})
+        .$promise
+        .then(function() {
+            item.first = 0;
+            $scope.first = 0;
+            Featured.upsert(item, function (result) {
+                    getFeatureds();
+                    console.log ("Featureds are:",$scope.featureds);
+                }, function (err) {
+                    console.log ("error uodating top product ",err);                
+                }
+            );
         });
     };
 

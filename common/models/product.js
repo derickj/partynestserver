@@ -1,7 +1,7 @@
 module.exports = function(Product) {
 //Product.disableRemoteMethod('create', true);                // Removes (POST) /products
 Product.disableRemoteMethod('upsert', true);                // Removes (PUT) /products
-Product.disableRemoteMethod('deleteById', true);            // Removes (DELETE) /products/:id
+//Product.disableRemoteMethod('deleteById', true);            // Removes (DELETE) /products/:id
 Product.disableRemoteMethod('replaceById', true);            // Removes (PUT) /products/:id
 // Product.disableRemoteMethod('replaceOrCreate', true);            // Removes (POST) /replaceOrCreate
 Product.disableRemoteMethod("updateAll", true);               // Removes (POST) /products/update

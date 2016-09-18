@@ -25,11 +25,6 @@
                         {{theme.name}}
                     </label>
                     </div>
-                    <!-- debug <tt>filtText : {{filtText | json}}</tt><br/>
-                    <div class="list-group">
-                    <a class="list-group-item" ng-repeat="theme in themes">{{theme.name}}&nbsp;
-                    </a>
-                    </div> -->
             </div> 
             </div>
              
@@ -37,39 +32,17 @@
                 <h3>{{message}}</h3>
             </div>
             <div class="col-xs-10" ng-if="showProducts">
-               <!-- <div class="row row-content">
-                <button ng-click="toggleDetails()" class="btn btn-xs btn-primary pull-right" type="button">
-                    {{showDetails ? 'Hide Details':'Show Details'}}
-                </button> 
-                <div  class="product-listing col-xs-6 col-sm-4" ng-repeat="prod in products | filter:{ description: filtText }">
-                        <h4 class="media-heading">{{prod.name}}
-                         <span class="label label-danger">{{prod.label}}</span>
-                         <span class="badge">{{prod.unitprice | currency:"R"}}</span></h4>
-                        <p ng-show="showDetails">{{prod.description}}</p>
-                        <!-- <a ui-sref="app.dishdetails({id: dish.id})">
-                        <img class="img-responsive"
-                         ng-src={{dish.image}} alt="{{dish.name}}">
-                        </a> 
-                </div>
-                </div> --> 
                 <div class = "row row-content">
-                <div  class="product-listing col-xs-6 col-sm-4" ng-repeat="prod in products | filter:{ description: filtText }">
+                <div ng-repeat="prod in products | filter:{ description: filtText }">
+                        <div  class="product-listing col-xs-6 col-sm-4">
                         <a ui-sref="app.productdetail({id: prod.id})">
                         <img class="img-responsive"
                          ng-src={{prod.image}} alt="{{prod.name}}">
                         </a>
+                            <p>{{prod.name}}</p>
+                        </div>
                 </div>
                 </div>
-                    <!--<div class="media-body">
-<div  class="product-listing col-xs-6 col-sm-4" ng-repeat="prod in products | filter:filtText">
-                        <h2 class="media-heading">{{dish.name}}
-                         <span class="label label-danger">{{dish.label}}</span>
-                         <span class="badge">{{dish.price | currency}}</span></h2>
-                        <p ng-show="showDetails">{{dish.description}}</p>
-                    </div>  
-                    </li>
-                </ul>    -->       
-            <!--    </div>   -->
             </div>  
         </div> 
     </div>

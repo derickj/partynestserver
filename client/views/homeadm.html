@@ -45,6 +45,12 @@
                 <i class="glyphicon glyphicon-remove pull-right"
                         ng-click="removeProduct(featured)"></i></a>
             </div>
+            <div class="radio" ng-repeat="featured in featureds">
+                <label>
+                <input type="radio" ng-model="$parent.first" ng-value="featured.first" ng-click="updateFeaturedList(featured)")>
+                        {{featured.productId}}
+                </label>
+            </div>
         </div>
         <div class="row">
             <h3>Products to add</h3> 

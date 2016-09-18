@@ -5766,6 +5766,39 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
 
             /**
              * @ngdoc method
+             * @name lbServices.Product#deleteById
+             * @methodOf lbServices.Product
+             *
+             * @description
+             *
+             * Delete a model instance by {{id}} from the data source.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - Model id
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `Product` object.)
+             * </em>
+             */
+            "deleteById": {
+              url: urlBase + "/Products/:id",
+              method: "DELETE",
+            },
+
+            /**
+             * @ngdoc method
              * @name lbServices.Product#count
              * @methodOf lbServices.Product
              *
@@ -5817,6 +5850,66 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
         );
 
 
+
+            /**
+             * @ngdoc method
+             * @name lbServices.Product#destroyById
+             * @methodOf lbServices.Product
+             *
+             * @description
+             *
+             * Delete a model instance by {{id}} from the data source.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - Model id
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `Product` object.)
+             * </em>
+             */
+        R["destroyById"] = R["deleteById"];
+
+            /**
+             * @ngdoc method
+             * @name lbServices.Product#removeById
+             * @methodOf lbServices.Product
+             *
+             * @description
+             *
+             * Delete a model instance by {{id}} from the data source.
+             *
+             * @param {Object=} parameters Request parameters.
+             *
+             *  - `id` – `{*}` - Model id
+             *
+             * @param {function(Object,Object)=} successCb
+             *   Success callback with two arguments: `value`, `responseHeaders`.
+             *
+             * @param {function(Object)=} errorCb Error callback with one argument:
+             *   `httpResponse`.
+             *
+             * @returns {Object} An empty reference that will be
+             *   populated with the actual data once the response is returned
+             *   from the server.
+             *
+             * <em>
+             * (The remote method definition does not provide any description.
+             * This usually means the response is a `Product` object.)
+             * </em>
+             */
+        R["removeById"] = R["deleteById"];
 
 
         /**
@@ -9883,6 +9976,53 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' &&
         * i.e. `Contact`.
         */
         R.modelName = "Contact";
+
+
+
+        return R;
+      }]);
+
+/**
+ * @ngdoc object
+ * @name lbServices.Email
+ * @header lbServices.Email
+ * @object
+ *
+ * @description
+ *
+ * A $resource object for interacting with the `Email` model.
+ *
+ * ## Example
+ *
+ * See
+ * {@link http://docs.angularjs.org/api/ngResource.$resource#example $resource}
+ * for an example of using this object.
+ *
+ */
+  module.factory(
+    "Email",
+    [
+      'LoopBackResource', 'LoopBackAuth', '$injector',
+      function(Resource, LoopBackAuth, $injector) {
+        var R = Resource(
+        urlBase + "/Emails/:id",
+          { 'id': '@id' },
+          {
+          }
+        );
+
+
+
+
+        /**
+        * @ngdoc property
+        * @name lbServices.Email#modelName
+        * @propertyOf lbServices.Email
+        * @description
+        * The name of the model represented by this $resource,
+        * i.e. `Email`.
+        */
+        R.modelName = "Email";
 
 
 

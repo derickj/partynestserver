@@ -5,7 +5,12 @@
   "options": {
     "validateUpsert": true
   },
-  "properties": {},
+  "properties": {
+    "first": {
+      "type": "number",
+      "default": 0
+    } 
+  },
   "validations": [],
   "relations": {
     "product": {
@@ -31,8 +36,7 @@
       "accessType": "EXECUTE",
       "principalType": "ROLE",
       "principalId": "admin",
-      "permission": "ALLOW",
-      "property": "create"
+      "permission": "ALLOW"
     },
     {
       "accessType": "WRITE",
